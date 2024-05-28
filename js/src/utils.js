@@ -231,6 +231,9 @@ NexT.utils = NexT.$u = {
    * @returns {string|void|XML|*}
    */
   escapeSelector: function (selector) {
+    // 对URL进行解码，以处理百分号编码的字符 
+    //传入的字符串中包含未编码的英文字符，decodeURIComponent会将它们保持原样
+    selector = decodeURIComponent(selector);
     return selector.replace(/[!"$%&'()*+,.\/:;<=>?@[\\\]^`{|}~]/g, '\\$&');
   },
 
