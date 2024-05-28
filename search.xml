@@ -21,7 +21,7 @@
   <entry>
     <title>利用github.io搭建自有博客</title>
     <url>/posts/5f64cd17/</url>
-    <content><![CDATA[<p>利用github.io搭建自有博客，基于hexo博客框架和next主题。<br>搭建这个blog框架吧，一是觉得csdn不好用，反正有一段时间特别卡，编辑界面出不来；二是觉得托管到上边没有github那种掌控感，反正csdn没有提供导出文章为md的功能，还得自己用工具吧html转换为md，而且广告贼多，就感觉自己被白嫖了。索性研究一下搭建自己的blog。<span id="more"></span></p>
+    <content><![CDATA[<p>利用github.io搭建自有博客，基于hexo博客框架和next主题。<br>搭建这个blog框架吧，一是觉得csdn不好用，反正有一段时间特别卡，编辑界面出不来；二是觉得托管到上边没有github那种掌控感，反正csdn没有提供导出文章为md的功能，还得自己用工具把html转换为md，而且广告贼多，就感觉自己被白嫖了。索性研究一下搭建自己的blog。<span id="more"></span></p>
 <h2 id="环境准备，本地以windows为例"><a href="#环境准备，本地以windows为例" class="headerlink" title="环境准备，本地以windows为例"></a>环境准备，本地以windows为例</h2><h3 id="代码托管，创建-github-io-仓库"><a href="#代码托管，创建-github-io-仓库" class="headerlink" title="代码托管，创建&lt;username&gt;.github.io 仓库"></a>代码托管，创建&lt;username&gt;.github.io 仓库</h3><p>创建的仓库，用来托管blog代码，github提供了github.io相关工具，最后代码同步完访问<a href="http://yourname.github.io/">http://yourname.github.io</a><br>就可以看到自己的网页了。以下是我自己的仓库设置，供参考：<br><img src="/../images/hexo_next_setting/github_setting.png" alt="github设置" title="github_setting"></p>
 <h3 id="本地部署-Hexo-环境"><a href="#本地部署-Hexo-环境" class="headerlink" title="本地部署 Hexo 环境"></a>本地部署 Hexo 环境</h3><p>Hexo 是一款基于 Node.js 效的静态博客框架</p>
 <ul>
