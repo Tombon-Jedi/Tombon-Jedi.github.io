@@ -362,7 +362,7 @@
 <p>%20其实就是空格的意思</p>
 <h3 id="Deploy-github"><a href="#Deploy-github" class="headerlink" title="Deploy github"></a>Deploy github</h3><p>将生成的静态页面部署到 github 上<br>修改站点配置文件_config.yml的最后部分</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-<p>要先安装deploy-git，才能用命令部署到GitHub</p>
+<p>要先安装deploy-git，才能用命令部署到GitHub,否则报错ERROR Deployer not found: git</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
 <p>然后</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean <span class="comment">#清除之前生成的东西</span></span><br><span class="line">hexo generate  <span class="comment">#生成静态文章，缩写hexo g</span></span><br><span class="line">hexo deploy  <span class="comment">#部署文章，缩写hexo d</span></span><br></pre></td></tr></table></figure>
