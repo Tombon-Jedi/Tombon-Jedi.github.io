@@ -3,7 +3,7 @@
   <entry>
     <title>Hello World</title>
     <url>/posts/4a17b156/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.<span id="more"></span></p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
 
 <p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
@@ -113,12 +113,12 @@
 <p>hexo 编译后，比如hexo server启动时，会给源文件的配置快插入：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">abbrlink: xxxxx</span><br></pre></td></tr></table></figure>
 <p>文章链接就会永久以此为基础。</p>
-<h3 id="浏览同级"><a href="#浏览同级" class="headerlink" title="浏览同级"></a>浏览同级</h3><p>busuanzi可以对博客访问量计数。<br>主题配置文件修改：</p>
+<h3 id="浏览统计"><a href="#浏览统计" class="headerlink" title="浏览统计"></a>浏览统计</h3><p>busuanzi可以对博客访问量计数。<br>主题配置文件修改：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">busuanzi_count:</span><br><span class="line">  <span class="built_in">enable</span>: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 <p>当enable: true时，代表开启全局开关。若site_uv、site_pv、page_pv的值均为false时，不蒜子仅作记录而不会在页面上显示。</p>
 <h3 id="放大缩小文中图片"><a href="#放大缩小文中图片" class="headerlink" title="放大缩小文中图片"></a>放大缩小文中图片</h3><p>开启Fancybox，这是一款用于显示图片、视频等。触摸启用，响应快，完全可定制。<br>主题配置文件修改：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">fancybox: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-
+<p>或者使用mediumzoom，更加简洁，两者不可同时使用。</p>
 <h3 id="一些有趣配置"><a href="#一些有趣配置" class="headerlink" title="一些有趣配置"></a>一些有趣配置</h3><p>参考：<a href="http://home.ustc.edu.cn/~liujunyan/blog/hexo-next-theme-config/#next-%E9%85%8D%E7%BD%AE">http://home.ustc.edu.cn/~liujunyan/blog/hexo-next-theme-config/#next-%E9%85%8D%E7%BD%AE</a><br>文末添加诗词、背景动画、盘古动画等</p>
 <h2 id="Deploy-github"><a href="#Deploy-github" class="headerlink" title="Deploy github"></a>Deploy github</h2><p>将生成的静态页面部署到 github 上<br>修改站点配置文件_config.yml的最后部分</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
@@ -134,5 +134,11 @@
 
 <p>参考：<br>比较全的教程：<a href="https://hexo-next.readthedocs.io/zh-cn/latest/">https://hexo-next.readthedocs.io/zh-cn/latest/</a><br>hexo官方文档：<a href="https://hexo.io/zh-cn/docs/">https://hexo.io/zh-cn/docs/</a><br>nextv8教程：<a href="https://theme-next.js.org/mist/docs/getting-started/">https://theme-next.js.org/mist/docs/getting-started/</a><br>nextv5教程：<a href="https://theme-next.iissnan.com/">https://theme-next.iissnan.com/</a>  可以做参考<br>markdown教程：<a href="https://markdown.com.cn/basic-syntax/">https://markdown.com.cn/basic-syntax/</a><br>搭建blog教程：<a href="https://mini-pi.github.io/2024/02/28/how-to-make-blog-wedsite/">https://mini-pi.github.io/2024/02/28/how-to-make-blog-wedsite/</a><br>Hexo-Next 主题博客个性化配置：<a href="https://blog.csdn.net/as480133937/article/details/100138838">https://blog.csdn.net/as480133937/article/details/100138838</a></p>
 ]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>blog</tag>
+      </tags>
   </entry>
 </search>
