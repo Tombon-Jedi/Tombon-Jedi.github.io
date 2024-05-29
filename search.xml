@@ -79,7 +79,7 @@
 
 <p>配置 Hexo 的主题参数（在根目录的 _config.yml 文件中），选择使用 Next 主题</p>
 <p>修改参数为：theme: next_v8</p>
-<p>next主题有很多配置，比如首页的文章折叠，这里自行看next<a href="https://theme-next.iissnan.com/">官网教程</a> 配置。   </p>
+<p>next主题有很多配置，比如首页的文章折叠，这里自行看next_v8<a href="https://theme-next.js.org/mist/docs/getting-started/">官网教程</a> 配置。   </p>
 <ul>
 <li>配置文件<br>在 Hexo 中有两份主要的配置文件，其名称都是 _config.yml。 其中，一份位于站点根目录下，主要包含 Hexo 本身的站点配置；另一份位于主题目录下，这份配置由主题作者提供，主要用于配置主题相关的选项。<br>为了描述方便，在以下说明中，将前者称为 站点配置文件， 后者称为 主题配置文件。<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/hexo_blog/_config.yml</span><br><span class="line"></span><br><span class="line">/hexo_blog/themes/next/_config.yml</span><br></pre></td></tr></table></figure></li>
 </ul>
@@ -113,6 +113,10 @@
 <p>hexo 编译后，比如hexo server启动时，会给源文件的配置快插入：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">abbrlink: xxxxx</span><br></pre></td></tr></table></figure>
 <p>文章链接就会永久以此为基础。</p>
+<h3 id="放大缩小文中图片"><a href="#放大缩小文中图片" class="headerlink" title="放大缩小文中图片"></a>放大缩小文中图片</h3><p>开启Fancybox，这是一款用于显示图片、视频等。触摸启用，响应快，完全可定制。<br>主题配置文件修改：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">fancybox: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="一些有趣配置"><a href="#一些有趣配置" class="headerlink" title="一些有趣配置"></a>一些有趣配置</h3><p>参考：<a href="http://home.ustc.edu.cn/~liujunyan/blog/hexo-next-theme-config/#next-%E9%85%8D%E7%BD%AE">http://home.ustc.edu.cn/~liujunyan/blog/hexo-next-theme-config/#next-%E9%85%8D%E7%BD%AE</a><br>文末添加诗词、背景动画、盘古动画等</p>
 <h2 id="Deploy-github"><a href="#Deploy-github" class="headerlink" title="Deploy github"></a>Deploy github</h2><p>将生成的静态页面部署到 github 上<br>修改站点配置文件_config.yml的最后部分</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
 <p>要先安装deploy-git，才能用命令部署到GitHub,否则报错ERROR Deployer not found: git</p>
@@ -125,7 +129,7 @@
 <h3 id="一键发布博客"><a href="#一键发布博客" class="headerlink" title="一键发布博客"></a>一键发布博客</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"><span class="built_in">cd</span> C:\Users\xxxx\Desktop\hexo_blog</span><br><span class="line">hexo deploy --generate&amp;&amp;pause</span><br></pre></td></tr></table></figure>
 
 
-<p>参考：<br>比较全的教程：<a href="https://hexo-next.readthedocs.io/zh-cn/latest/">https://hexo-next.readthedocs.io/zh-cn/latest/</a><br>hexo官方文档：<a href="https://hexo.io/zh-cn/docs/">https://hexo.io/zh-cn/docs/</a><br>next教程：<a href="https://theme-next.iissnan.com/">https://theme-next.iissnan.com/</a><br>markdown教程：<a href="https://markdown.com.cn/basic-syntax/">https://markdown.com.cn/basic-syntax/</a><br>搭建blog教程：<a href="https://mini-pi.github.io/2024/02/28/how-to-make-blog-wedsite/">https://mini-pi.github.io/2024/02/28/how-to-make-blog-wedsite/</a><br>Hexo-Next 主题博客个性化配置：<a href="https://blog.csdn.net/as480133937/article/details/100138838">https://blog.csdn.net/as480133937/article/details/100138838</a></p>
+<p>参考：<br>比较全的教程：<a href="https://hexo-next.readthedocs.io/zh-cn/latest/">https://hexo-next.readthedocs.io/zh-cn/latest/</a><br>hexo官方文档：<a href="https://hexo.io/zh-cn/docs/">https://hexo.io/zh-cn/docs/</a><br>nextv8教程：<a href="https://theme-next.js.org/mist/docs/getting-started/">https://theme-next.js.org/mist/docs/getting-started/</a><br>nextv5教程：<a href="https://theme-next.iissnan.com/">https://theme-next.iissnan.com/</a>  可以做参考<br>markdown教程：<a href="https://markdown.com.cn/basic-syntax/">https://markdown.com.cn/basic-syntax/</a><br>搭建blog教程：<a href="https://mini-pi.github.io/2024/02/28/how-to-make-blog-wedsite/">https://mini-pi.github.io/2024/02/28/how-to-make-blog-wedsite/</a><br>Hexo-Next 主题博客个性化配置：<a href="https://blog.csdn.net/as480133937/article/details/100138838">https://blog.csdn.net/as480133937/article/details/100138838</a></p>
 ]]></content>
   </entry>
 </search>
