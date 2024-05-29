@@ -113,6 +113,9 @@
 <p>hexo 编译后，比如hexo server启动时，会给源文件的配置快插入：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">abbrlink: xxxxx</span><br></pre></td></tr></table></figure>
 <p>文章链接就会永久以此为基础。</p>
+<h3 id="浏览同级"><a href="#浏览同级" class="headerlink" title="浏览同级"></a>浏览同级</h3><p>busuanzi可以对博客访问量计数。<br>主题配置文件修改：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">busuanzi_count:</span><br><span class="line">  <span class="built_in">enable</span>: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>当enable: true时，代表开启全局开关。若site_uv、site_pv、page_pv的值均为false时，不蒜子仅作记录而不会在页面上显示。</p>
 <h3 id="放大缩小文中图片"><a href="#放大缩小文中图片" class="headerlink" title="放大缩小文中图片"></a>放大缩小文中图片</h3><p>开启Fancybox，这是一款用于显示图片、视频等。触摸启用，响应快，完全可定制。<br>主题配置文件修改：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">fancybox: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
