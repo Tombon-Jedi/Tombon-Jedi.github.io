@@ -1410,7 +1410,7 @@ pre code {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #d2f6ba;
+  background: #dd4b11;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -2980,4 +2980,8 @@ header.header {
 }
 .sub-menu .menu-item {
   display: inline-block;
+}
+.giscus {
+  max-width: unset;
+  box-sizing: border-box;
 }
