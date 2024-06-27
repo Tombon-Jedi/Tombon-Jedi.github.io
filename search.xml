@@ -170,7 +170,10 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">include(CheckLanguage)</span><br><span class="line">check_language(CUDA)</span><br></pre></td></tr></table></figure>
 
 <p>然后就可以跟编译普通C++代码一样用add_executable编译可执行文件了：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.10)</span><br><span class="line">project(CUDA_TEST LANGUAGES CUDA CXX)</span><br><span class="line"></span><br><span class="line">include(CheckLanguage)</span><br><span class="line">check_language(CUDA)</span><br><span class="line"></span><br><span class="line">add_executable(cuda_test cuda_test.cu)</span><br></pre></td></tr></table></figure>]]></content>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.10)</span><br><span class="line">project(CUDA_TEST LANGUAGES CUDA CXX)</span><br><span class="line"></span><br><span class="line">include(CheckLanguage)</span><br><span class="line">check_language(CUDA)</span><br><span class="line"></span><br><span class="line">add_executable(cuda_test cuda_test.cu)</span><br></pre></td></tr></table></figure>
+
+<p>参考：<br><a href="https://cliutils.gitlab.io/modern-cmake/chapters/packages/CUDA.html">https://cliutils.gitlab.io/modern-cmake/chapters/packages/CUDA.html</a></p>
+]]></content>
       <categories>
         <category>部署</category>
       </categories>
