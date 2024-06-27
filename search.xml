@@ -154,4 +154,28 @@
         <tag>blog</tag>
       </tags>
   </entry>
+  <entry>
+    <title>cmake 配置 cuda支持</title>
+    <url>/posts/5cf09be9/</url>
+    <content><![CDATA[<p>对于c&#x2F;c++而言，编译cuda可以使用nvcc工具直接命令行进行编译，不过对于大型工程，还是需要利用cmake进行管理，下面介绍一下cmake如何配置cuda。<span id="more"></span></p>
+<h2 id="老版本方式-find-package"><a href="#老版本方式-find-package" class="headerlink" title="老版本方式 find_package"></a>老版本方式 find_package</h2><p>如果CMake的版本小于3.10，可以在CMakeLists.txt文件中使用find_package来导入CUDA包，然后就可以使用cuda_add_executable()或者cuda_add_library()来编译CUDA可执行文件或者库文件了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.8)</span><br><span class="line">project(CUDA_TEST)</span><br><span class="line"></span><br><span class="line">find_package(CUDA REQUIRED)</span><br><span class="line"></span><br><span class="line">message(STATUS <span class="string">&quot;cuda version: &quot;</span> <span class="variable">$&#123;CUDA_VERSION_STRING&#125;</span>)</span><br><span class="line">include_directories(<span class="variable">$&#123;CUDA_INCLUDE_DIRS&#125;</span>)</span><br><span class="line"></span><br><span class="line">cuda_add_executable(cuda_test cuda_test.cu)</span><br><span class="line">target_link_libraries(cuda_test <span class="variable">$&#123;CUDA_LIBRARIES&#125;</span>)</span><br></pre></td></tr></table></figure>
+<p>其中变量CUDA_VERSION_STRING表示CUDA的版本号，CUDA_INCLUDE_DIRS表示CUDA头文件存放的目录，CUDA_LIBRARIES表示CUDA的库文件。更多说明可以参考CMake的<a href="https://cmake.org/cmake/help/latest/module/FindCUDA.html">官方文档</a></p>
+<h2 id="新的方式-添加cuda编程语言支持"><a href="#新的方式-添加cuda编程语言支持" class="headerlink" title="新的方式 添加cuda编程语言支持"></a>新的方式 添加cuda编程语言支持</h2><p>在3.10及以上版本的CMake中，find_package的方式已经被弃用（可以用但不推荐），要编译CUDA代码可以CMakeLists.txt文件中添加对CUDA编程语言的支持。如果程序中CUDA代码是可选的，那么可以在CMakeLists.txt文件中使用下面的语句进行使能：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">enable_language(CUDA)</span><br></pre></td></tr></table></figure>
+<p>如果CUDA代码是必须的，那么就需要像下面这样进行设置，表示在项目CUDA_TEST中要用到CUDA和C++两种编程语言：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">project(CUDA_TEST LANGUAGES CUDA CXX)</span><br></pre></td></tr></table></figure>
+
+<p>可以通过CheckLanuage判断CUDA是否可用，如果确定有环境可以不要</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">include(CheckLanguage)</span><br><span class="line">check_language(CUDA)</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以跟编译普通C++代码一样用add_executable编译可执行文件了：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.10)</span><br><span class="line">project(CUDA_TEST LANGUAGES CUDA CXX)</span><br><span class="line"></span><br><span class="line">include(CheckLanguage)</span><br><span class="line">check_language(CUDA)</span><br><span class="line"></span><br><span class="line">add_executable(cuda_test cuda_test.cu)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>部署</category>
+      </categories>
+      <tags>
+        <tag>cuda</tag>
+      </tags>
+  </entry>
 </search>
