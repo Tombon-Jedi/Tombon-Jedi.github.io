@@ -19,27 +19,34 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"tombon-jedi.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="在进行并行编程，如cuda编程，进行grid、block、thread等索引和实际的计算多维数组对应时，如模型输出后对内存上的输出排列按照特定的数组结构进行分解时，往往都会设计数组地址的计算。在内存中，数据都是一维度线性存在的，但我们在写程序时，往往会按照二维、多维的逻辑进行计算，这就涉及到底层一点的代码，会有多维索引和实际内存地址的相互转换。">
+    <meta name="description" content="刷了一遍谭升的cuda教程，这里记录一些自己的心得体会和关键点。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多维度数组寻址">
-<meta property="og:url" content="https://tombon-jedi.github.io/posts/17977dc1/index.html">
+<meta property="og:title" content="cuda_learn_record">
+<meta property="og:url" content="https://tombon-jedi.github.io/posts/6d64b5a8/index.html">
 <meta property="og:site_name" content="Tombon">
-<meta property="og:description" content="在进行并行编程，如cuda编程，进行grid、block、thread等索引和实际的计算多维数组对应时，如模型输出后对内存上的输出排列按照特定的数组结构进行分解时，往往都会设计数组地址的计算。在内存中，数据都是一维度线性存在的，但我们在写程序时，往往会按照二维、多维的逻辑进行计算，这就涉及到底层一点的代码，会有多维索引和实际内存地址的相互转换。">
+<meta property="og:description" content="刷了一遍谭升的cuda教程，这里记录一些自己的心得体会和关键点。">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-06-30T09:38:32.000Z">
-<meta property="article:modified_time" content="2024-07-02T02:44:26.020Z">
+<meta property="og:image" content="https://tombon-jedi.github.io/images/cuda/host_cuda.png">
+<meta property="og:image" content="https://tombon-jedi.github.io/images/cuda/wraps.png">
+<meta property="og:image" content="https://tombon-jedi.github.io/images/cuda/thread_wrap.png">
+<meta property="og:image" content="https://tombon-jedi.github.io/images/cuda/cuda_memory.png">
+<meta property="og:image" content="https://tombon-jedi.github.io/images/cuda/memory_access.png">
+<meta property="article:published_time" content="2024-07-09T08:54:52.000Z">
+<meta property="article:modified_time" content="2024-07-12T07:50:23.175Z">
 <meta property="article:author" content="Tombon">
+<meta property="article:tag" content="cuda">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tombon-jedi.github.io/images/cuda/host_cuda.png">
 
 
-<link rel="canonical" href="https://tombon-jedi.github.io/posts/17977dc1/">
+<link rel="canonical" href="https://tombon-jedi.github.io/posts/6d64b5a8/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://tombon-jedi.github.io/posts/17977dc1/","path":"posts/17977dc1/","title":"多维度数组寻址"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://tombon-jedi.github.io/posts/6d64b5a8/","path":"posts/6d64b5a8/","title":"cuda_learn_record"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>多维度数组寻址 | Tombon</title>
+<title>cuda_learn_record | Tombon</title>
   
 
 
@@ -138,7 +145,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%BB%B4%E6%95%B0%E7%BB%84%E5%86%85%E5%AD%98%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">一维数组内存地址转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BB%B4%E6%95%B0%E7%BB%84%E5%86%85%E5%AD%98%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">二维数组内存地址转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%BB%B4%E6%95%B0%E7%BB%84%E5%86%85%E5%AD%98%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">三维数组内存地址转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BB%B4%E6%95%B0%E7%BB%84%E5%86%85%E5%AD%98%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">多维数组内存地址转换</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3cuda%E7%BC%96%E7%A8%8B%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">理解cuda编程的核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cpu%E5%92%8Ccuda%E7%9A%84%E5%8D%8F%E4%BD%9C%EF%BC%8Ccuda%E7%9A%84%E7%A1%AC%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">cpu和cuda的协作，cuda的硬件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93"><span class="nav-number">1.1.1.</span> <span class="nav-text">数据传输</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%BB%84%E7%BB%87%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.2.</span> <span class="nav-text">线程的组织结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%9D%9F"><span class="nav-number">1.1.3.</span> <span class="nav-text">线程束</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%9D%9F%E5%88%86%E5%8C%96"><span class="nav-number">1.1.4.</span> <span class="nav-text">线程束分化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SM%E6%89%A7%E8%A1%8C%E7%89%B9%E7%82%B9"><span class="nav-number">1.1.5.</span> <span class="nav-text">SM执行特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cuda%E7%9A%84%E5%86%85%E5%AD%98%E7%BB%84%E7%BB%87%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.6.</span> <span class="nav-text">cuda的内存组织方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E8%AE%BF%E9%97%AE%E5%86%85%E5%AD%98%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.7.</span> <span class="nav-text">线程访问内存的方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="nav-number">1.1.8.</span> <span class="nav-text">共享内存</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%AD%98%E5%82%A8%E4%BD%93"><span class="nav-number">1.1.8.1.</span> <span class="nav-text">内存存储体</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.2.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -202,7 +209,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://tombon-jedi.github.io/posts/17977dc1/">
+    <link itemprop="mainEntityOfPage" href="https://tombon-jedi.github.io/posts/6d64b5a8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/touxiang.jpg">
@@ -215,12 +222,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="多维度数组寻址 | Tombon">
+      <meta itemprop="name" content="cuda_learn_record | Tombon">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          多维度数组寻址
+          cuda_learn_record
         </h1>
 
         <div class="post-meta-container">
@@ -231,14 +238,14 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-06-30 17:38:32" itemprop="dateCreated datePublished" datetime="2024-06-30T17:38:32+08:00">2024-06-30</time>
+      <time title="Created: 2024-07-09 16:54:52" itemprop="dateCreated datePublished" datetime="2024-07-09T16:54:52+08:00">2024-07-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-02 10:44:26" itemprop="dateModified" datetime="2024-07-02T10:44:26+08:00">2024-07-02</time>
+      <time title="Modified: 2024-07-12 15:50:23" itemprop="dateModified" datetime="2024-07-12T15:50:23+08:00">2024-07-12</time>
     </span>
 
   
@@ -257,11 +264,33 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>在进行并行编程，如cuda编程，进行grid、block、thread等索引和实际的计算多维数组对应时，如模型输出后对内存上的输出排列按照特定的数组结构进行分解时，往往都会设计数组地址的计算。<br>在内存中，数据都是一维度线性存在的，但我们在写程序时，往往会按照二维、多维的逻辑进行计算，这就涉及到底层一点的代码，会有多维索引和实际内存地址的相互转换。<span id="more"></span></p>
-<h2 id="一维数组内存地址转换"><a href="#一维数组内存地址转换" class="headerlink" title="一维数组内存地址转换"></a>一维数组内存地址转换</h2><p>这个没太多说的，和实际内存排列一致，也就是偏移是一致的，一般加个内存起始地址就对应上了。</p>
-<h2 id="二维数组内存地址转换"><a href="#二维数组内存地址转换" class="headerlink" title="二维数组内存地址转换"></a>二维数组内存地址转换</h2><p>这里要说明一个约定俗成的说法：一般写法array[…][z][y][x]  即多维数组，从左往右，越右边的轴越内层，比如x在这里就是最内层的轴，即代表了该数组最小单元里有多少个元素。<br>对于二维数组array[y][x]  常见的x，y轴排列，可以想象成一页，一页有行和列。x和y没必要非得去对应行或者列，x对应行也好，对应列也好，只是一个叫法。所以为什么会有轴这个叫法，也是翻译过来的，x轴和y轴，代表了不同层级的元素数量。比如x轴这里是最内层的元素数量，y作为更高一层的，代表了有y个x轴。如果还有z轴，代表了有z个y轴的数量（y轴就像页了，有y个x轴组成），以此类推更多维度。<br>所以对于二维数组array[y][x]的内存如何计算？可以想象成一页，最内层的x在某一行的位置，那么前边所有行可以理解成是满的，那么当前数组索引对应的实际内存地址应该是前边所有行满的数量加上当前行的即x的值。<br>轴是从0开始计算的，所以y的值代表了实际前边已经满的行数量，x的值是最后行里的实际位置。也可以理解成偏移量。所以内存地址为y_value*dimx+x_value</p>
-<h2 id="三维数组内存地址转换"><a href="#三维数组内存地址转换" class="headerlink" title="三维数组内存地址转换"></a>三维数组内存地址转换</h2><p>前边二维想象成页的话，三维可以想象成立方体了，其中的一页页（xy轴）堆叠起来，这个一页页的数量就代表了z轴的值。<br>所以，z本身的值就是前边所有满的页，在加上最后页的计算（同理二维时的计算），就是最终三维的计算了.所以三维度数组就是：z_value*dimx*dimy+y_value*dimx+x_value,</p>
-<h2 id="多维数组内存地址转换"><a href="#多维数组内存地址转换" class="headerlink" title="多维数组内存地址转换"></a>多维数组内存地址转换</h2><p>有了前边二维到三维的层层递进，就不难理解更多的多维度了，反正就是从最外层往最内层一层层推即可。以最外层轴的数值乘以所有内层轴的维度数，层层计算最后累加即可。<br>有个注意的点儿就是，当轴为1时，其值就只能是0，那么，比如三维数组的z轴是1，那么根据公式：z_value*dimx*dimy+y_value<em>dimx+x_value, 其中z_value只能是0，所以就可以简化为：y_value</em>dimx+x_value，进一步的，对于轴为1的情况，在计算内存地址时是可以省略掉。</p>
+    <div class="post-body" itemprop="articleBody"><p>刷了一遍<a target="_blank" rel="noopener" href="https://face2ai.com/categories/CUDA/">谭升的cuda教程</a>，这里记录一些自己的心得体会和关键点。<span id="more"></span></p>
+<h2 id="理解cuda编程的核心概念"><a href="#理解cuda编程的核心概念" class="headerlink" title="理解cuda编程的核心概念"></a>理解cuda编程的核心概念</h2><p>学过计算机系统组成都知道，软件的效率，和你对硬件的了解，针对硬件的优化息息相关，比如cpu的分支预测、缓存命中，内存、硬盘的读写效率，如何去挖掘和适应硬件，决定了你程序性能。所以针对某个硬件的编程，自然，从硬件本身的结构、特点入手，了解清楚了在去想很多问题就很简单了，软件层面很多的写法、妥协，都是因为硬件工程师是这么设计硬件的……</p>
+<h3 id="cpu和cuda的协作，cuda的硬件结构"><a href="#cpu和cuda的协作，cuda的硬件结构" class="headerlink" title="cpu和cuda的协作，cuda的硬件结构"></a>cpu和cuda的协作，cuda的硬件结构</h3><p><img src="/../../images/cuda/host_cuda.png" alt="cpu_cuda" title="cpu_cuda"><br>为什么需要cuda进行并行计算就不解释了，这张图能看出什么？</p>
+<h4 id="数据传输"><a href="#数据传输" class="headerlink" title="数据传输"></a>数据传输</h4><p>host也就是cpu主机端，和cuda也就是device端，有数据传输的过程，这里一般通过pcie总线进行传输，既然是数据传输，那么就会有数据传输速度的上限，这里通常用带宽来表示，一般是xxGB&#x2F;s。</p>
+<h4 id="线程的组织结构"><a href="#线程的组织结构" class="headerlink" title="线程的组织结构"></a>线程的组织结构</h4><p>一个核函数只能有一个grid，一个grid可以有很多个块，每个块可以有很多的线程<br>grid和block的维度最大是三维。注意线程块、网格都是逻辑上的产物，实际上硬件SM的排列大概率和内存差不多。都是一维的。[详见]：(<a target="_blank" rel="noopener" href="https://face2ai.com/CUDA-F-2-0-CUDA%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B01/">https://face2ai.com/CUDA-F-2-0-CUDA%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B01/</a>)</p>
+<p><img src="/../../images/cuda/wraps.png" alt="wraps" title="wraps"></p>
+<h4 id="线程束"><a href="#线程束" class="headerlink" title="线程束"></a>线程束</h4><p>线程块是个逻辑产物，因为在计算机里，内存总是一维线性存在的，所以执行起来也是一维的访问线程块中的线程，但是我们在写程序的时候却可以以二维三维的方式进行，原因是方便我们写程序，比如处理图像或者三维的数据，三维块就会变得很直接，很方便。<br>在块中，每个线程有唯一的编号（可能是个三维的编号），threadIdx。<br>网格中，每个线程块也有唯一的编号(可能是个三维的编号)，blockIdx<br>那么每个线程就有在网格中的唯一编号。<br>当一个线程块中有128个线程的时候，其分配到SM上执行时，会分成4个块：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">warp0: thread  0,........thread31</span><br><span class="line">warp1: thread 32,........thread63</span><br><span class="line">warp2: thread 64,........thread95</span><br><span class="line">warp3: thread 96,........thread127</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://face2ai.com/CUDA-F-3-2-%E7%90%86%E8%A7%A3%E7%BA%BF%E7%A8%8B%E6%9D%9F%E6%89%A7%E8%A1%8C%E7%9A%84%E6%9C%AC%E8%B4%A8-P1/">详见</a></p>
+<h4 id="线程束分化"><a href="#线程束分化" class="headerlink" title="线程束分化"></a>线程束分化</h4><p>线程束被执行的时候会被分配给相同的指令，处理各自私有的数据，也就是说一个线程束当时执行的指令都是一样的，处理的数据可以不一样。但这种执行指令的方式，遇到有分支的情况，比如当前给线程束的指令是执行if下边的语句，这个线程束内还存在需要执行else部分的，那么else这些线程就只能阻塞，直到分配了执行else的指令。条件分支越多，并行性削弱越严重，这就是线程束执行指令特点导致的。<br><img src="/../../images/cuda/thread_wrap.png" alt="thread_wrap" title="thread_wrap"></p>
+<h4 id="SM执行特点"><a href="#SM执行特点" class="headerlink" title="SM执行特点"></a>SM执行特点</h4><p>每个SM上有多个block，一个block有多个线程（可以是几百个，但不会超过某个最大值），但是从机器的角度，在某时刻T，SM上只执行一个线程束，也就是32个线程在同时同步执行。<br>因为SM有限，虽然我们的编程模型层面看所有线程都是并行执行的，但是在微观上看，所有线程块也是分批次的在物理层面的机器上执行，线程块里不同的线程可能进度都不一样，但是同一个线程束内的线程拥有相同的进度。<br>并行就会引起竞争，多线程以未定义的顺序访问同一个数据，就导致了不可预测的行为，CUDA只提供了一种块内同步的方式，块之间没办法同步！</p>
+<p><img src="/../../images/cuda/cuda_memory.png" alt="cuda_memory" title="cuda_memory"><br>上边的图是</p>
+<h4 id="cuda的内存组织方式"><a href="#cuda的内存组织方式" class="headerlink" title="cuda的内存组织方式"></a>cuda的内存组织方式</h4><p>CUDA中每个线程都有自己的私有的本地内存；线程块有自己的共享内存，对线程块内所有线程可见；所有线程都能访问读取常量内存和纹理内存，但是不能写，因为他们是只读的；全局内存，常量内存和纹理内存空间有不同的用途。对于一个应用来说，全局内存，常量内存和纹理内存有相同的生命周期 <a target="_blank" rel="noopener" href="https://face2ai.com/CUDA-F-4-1-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0/">详见</a></p>
+<p><img src="/../../images/cuda/memory_access.png" alt="memory_access" title="memory_access"></p>
+<h4 id="线程访问内存的方式"><a href="#线程访问内存的方式" class="headerlink" title="线程访问内存的方式"></a>线程访问内存的方式</h4><p>核函数运行时需要从全局内存（DRAM）中读取数据不是想取多少是多少，而是一次性读特定粒度大小到缓存，然后在从缓存加载特定的数据。这块缓存机制和cpu的差不多。解释下“粒度”，可以理解为最小单位，也就是核函数运行时每次读内存，哪怕是读一个字节的变量，也要读128字节，或者32字节，而具体是到底是32还是128还是要看访问方式：对于CPU来说，一级缓存或者二级缓存是不能被编程的，但是CUDA是支持通过编译指令停用一级缓存的。如果启用一级缓存，那么每次从DRAM上加载数据的粒度是128字节，如果不适用一级缓存，只是用二级缓存，那么粒度是32字节。</p>
+<h4 id="共享内存"><a href="#共享内存" class="headerlink" title="共享内存"></a>共享内存</h4><p>共享内存（shared memory，SMEM）是GPU的一个关键部分，物理层面，每个SM都有一个小的内存池，这个线程池被次SM上执行的线程块中的所有线程所共享。共享内存使同一个线程块中可以相互协同，便于片上的内存可以被最大化的利用，降低回到全局内存读取的延迟。SM上有共享内存，L1一级缓存，ReadOnly 只读缓存，Constant常量缓存。所有从Dram全局内存中过来的数据都要经过二级缓存，相比之下，更接近SM计算核心的SMEM，L1，ReadOnly，Constant拥有更快的读取速度，SMEM和L1相比于L2延迟低大概20~30倍，带宽大约是10倍。每个SM上有若干KB的片上内存，共享内存和L1共享这若干KB</p>
+<h5 id="内存存储体"><a href="#内存存储体" class="headerlink" title="内存存储体"></a>内存存储体</h5><p>共享内存是一个一维的地址空间，注意这句话的意思是，共享内存的地址是一维的，也就是和所有我们前面提到过的内存一样，都是线性的，二维三维更多维的地址都要转换成一维的来对应物理上的内存地址。<br>共享内存有个特殊的形式是，分为32个同样大小的内存模型，称为存储体，可以同时访问。32个存储体的目的是对应一个线程束中有32个线程，这些线程在访问共享内存的时候，如果都访问不同存储体（无冲突），那么一个事务就能够完成，否则（有冲突）需要多个内存事务了，这样带宽利用率降低。 一个存储体大小特定，访问存储体时一次访问多大看计算能力。<br>具体存储体冲突<a target="_blank" rel="noopener" href="https://face2ai.com/CUDA-F-5-1-CUDA%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E6%A6%82%E8%BF%B0/">详见</a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过以上的这些概念，很容易总结出cuda的性能容易在哪儿出问题，如何优化。</p>
+<ul>
+<li>优化block和grid的形状，使得线程利用硬件资源最大</li>
+<li>由于线程束的执行特点，如何避免分支分化</li>
+<li>不同线程束、不同block、甚至grid直接如何同步？数据传输如何同步？</li>
+<li>可否使得单个线程尽可能完成更多的任务，减少资源占用，如循环展开</li>
+<li>如何利用全局内存加快数据访问</li>
+<li>如何保存内存高效率连续读写，而不是交叉访问，甚至于访问冲突？</li>
+<li>优化cpu和gpu之间的数据传输，使其充分利用带宽</li>
+</ul>
 
     </div>
 
@@ -292,7 +321,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>Post link: </strong>
-      <a href="https://tombon-jedi.github.io/posts/17977dc1/" title="多维度数组寻址">https://tombon-jedi.github.io/posts/17977dc1/</a>
+      <a href="https://tombon-jedi.github.io/posts/6d64b5a8/" title="cuda_learn_record">https://tombon-jedi.github.io/posts/6d64b5a8/</a>
   </li>
   <li class="post-copyright-license">
       <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -300,6 +329,9 @@
 </ul>
 </div>
 
+          <div class="post-tags">
+              <a href="/tags/cuda/" rel="tag"># cuda</a>
+          </div>
 
         
   <div class="social-like a2a_kit a2a_kit_size_32 a2a_default_style">
@@ -310,14 +342,11 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/posts/5cf09be9/" rel="prev" title="cmake 配置 cuda支持">
-                  <i class="fa fa-angle-left"></i> cmake 配置 cuda支持
+                <a href="/posts/a9bc9cab/" rel="prev" title="cuda工具使用">
+                  <i class="fa fa-angle-left"></i> cuda工具使用
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/posts/a9bc9cab/" rel="next" title="cuda工具使用">
-                  cuda工具使用 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
